@@ -10,9 +10,12 @@ services:
     volumes:
       - ./:/app
     environment:
+      DISCORD_CLIENT_ID: ~
+      DISCORD_CLIENT_SECRET: ~
+      LOG_LEVEL: ~
+      NEXTAUTH_URL: http://localhost:8080
       NODE_OPTIONS: "--unhandled-rejections=throw"
       DATABASE_URL: postgresql://postgres:postgres@db/hungry_james
-      LOG_LEVEL: ~
     depends_on:
       - db
 

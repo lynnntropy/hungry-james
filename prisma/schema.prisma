@@ -11,8 +11,9 @@ generator client {
 }
 
 model User {
-  id         Int     @id @default(autoincrement())
-  pronoun    String
-  avatar     String
-  avatarDead String?
+  id          Int     @id @default(autoincrement())
+  externalIds Json
+  pronoun     String
+  avatar      String
+  avatarDead  String?
 }
