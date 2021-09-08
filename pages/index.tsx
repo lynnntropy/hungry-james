@@ -6,8 +6,6 @@ import Image from "next/image";
 const Home: NextPage = () => {
   const [session] = useSession();
 
-  debugger;
-
   return <>uwu</>;
 };
 
