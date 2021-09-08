@@ -3,13 +3,7 @@ import { User as AppUser } from "./app";
 
 declare module "next-auth" {
   interface Session {
-    user: {
-      id: string;
-      name: string;
-      email: string;
-      image: string;
-      guildIds: string[];
-    };
+    user: AppUser;
   }
 
   interface User {

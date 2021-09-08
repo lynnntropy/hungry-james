@@ -18,6 +18,16 @@ export const fetchOrCreateUserForDiscordProfile = async (
   return await createUserForDiscordProfile(profile, tokens);
 };
 
+export const findUserById = async (id: string): Promise<User | null> => {
+  const user = await prisma.user.findUnique({ where: { id: Number(id) } });
+
+  if (user) {
+    return { ...user, id: user.id.toString() } as User;
+  }
+
+  return null;
+};
+
 const createUserForDiscordProfile = async (
   profile: Profile,
   tokens: TokenSet

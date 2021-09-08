@@ -1,7 +1,11 @@
 import axios from "axios";
 import NextAuth from "next-auth";
 import Providers from "next-auth/providers";
-import { fetchOrCreateUserForDiscordProfile } from "../../../src/users";
+import { User } from "../../../src/types/app";
+import {
+  fetchOrCreateUserForDiscordProfile,
+  findUserById,
+} from "../../../src/users";
 
 export interface Guild {
   id: string;
@@ -26,16 +30,14 @@ export default NextAuth({
     }),
   ],
   callbacks: {
-    // async session(session, token) {
-    //   return Promise.resolve({
-    //     ...session,
-    //     user: {
-    //       ...session.user,
-    //       id: token.sub as string,
-    //       guildIds: (token as JWT).guildIds as string[],
-    //     },
-    //   });
-    // },
+    async session(session, token) {
+      const user = (await findUserById(token.sub as string)) as User;
+
+      return Promise.resolve({
+        ...session,
+        user,
+      });
+    },
     // async jwt(token, user) {
     //   if (user?.guilds) {
     //     token.guildIds = user.guilds.map((g: Guild) => g.id);
