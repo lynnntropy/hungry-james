@@ -1,6 +1,15 @@
+import { S3 } from "@aws-sdk/client-s3";
+import axios, { AxiosStatic } from "axios";
 import { Profile, TokenSet } from "next-auth";
 import prisma from "./prisma";
+import s3 from "./s3";
 import { fetchOrCreateUserForDiscordProfile } from "./users";
+
+jest.mock("axios");
+jest.mock("./s3");
+
+const axiosMock = axios as jest.Mocked<AxiosStatic>;
+const s3Mock = s3 as jest.Mocked<S3>;
 
 test("creates new user for new Discord ID", async () => {
   const userDelegate = {
@@ -11,8 +20,7 @@ test("creates new user for new Discord ID", async () => {
         discord: "test_new_discord_id",
       },
       pronoun: "they/them/their/theirs/themselves",
-      avatar:
-        "https://cdn.discordapp.com/avatars/test_new_discord_id/test_avatar.png",
+      avatar: "imported/discord/test_new_discord_id/test_avatar.png",
       avatarDead: null,
     }),
   };
@@ -20,6 +28,8 @@ test("creates new user for new Discord ID", async () => {
   Object.defineProperty(prisma, "user", {
     value: userDelegate,
   });
+
+  axiosMock.get.mockResolvedValueOnce({ data: "test_avatar_data" });
 
   const profile: Profile = {
     id: "test_new_discord_id",
@@ -38,7 +48,20 @@ test("creates new user for new Discord ID", async () => {
   const user = await fetchOrCreateUserForDiscordProfile(profile, tokens);
 
   expect(userDelegate.findFirst.mock.calls.length).toBe(1);
-  expect(userDelegate.create.mock.calls.length).toBe(1);
+
+  expect(axiosMock.get).toHaveBeenCalledTimes(1);
+  expect(axiosMock.get.mock.calls[0][0]).toEqual(
+    "https://cdn.discordapp.com/avatars/test_new_discord_id/test_avatar.png"
+  );
+
+  expect(s3Mock.putObject).toHaveBeenCalledTimes(1);
+  expect(s3Mock.putObject).toHaveBeenCalledWith({
+    Key: "imported/discord/test_new_discord_id/test_avatar.png",
+    Bucket: "avatars",
+    Body: "test_avatar_data",
+  });
+
+  expect(userDelegate.create).toHaveBeenCalledTimes(1);
   expect(userDelegate.create.mock.calls[0].length).toBe(1);
   expect(userDelegate.create.mock.calls[0][0]).toEqual({
     data: {
@@ -46,8 +69,7 @@ test("creates new user for new Discord ID", async () => {
         discord: "test_new_discord_id",
       },
       pronoun: "they/them/their/theirs/themselves",
-      avatar:
-        "https://cdn.discordapp.com/avatars/test_new_discord_id/test_avatar.png",
+      avatar: "imported/discord/test_new_discord_id/test_avatar.png",
       avatarDead: null,
     },
   });
@@ -58,8 +80,7 @@ test("creates new user for new Discord ID", async () => {
       discord: "test_new_discord_id",
     },
     pronoun: "they/them/their/theirs/themselves",
-    avatar:
-      "https://cdn.discordapp.com/avatars/test_new_discord_id/test_avatar.png",
+    avatar: "imported/discord/test_new_discord_id/test_avatar.png",
     avatarDead: null,
   });
 });

@@ -16,6 +16,9 @@ services:
       NEXTAUTH_URL: http://localhost:8080
       NODE_OPTIONS: "--unhandled-rejections=throw"
       DATABASE_URL: postgresql://postgres:postgres@db/hungry_james
+      AWS_ACCESS_KEY_ID: test
+      AWS_SECRET_ACCESS_KEY: test
+      AWS_S3_ENDPOINT: http://localstack:4566
     depends_on:
       - db
 
