@@ -7,7 +7,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "test": "jest"
+    "test": "jest",
+    "graphql:coverage": "graphql coverage",
+    "graphql:validate": "graphql validate"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.30.0",
