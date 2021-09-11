@@ -1,10 +1,9 @@
-import { Credentials } from "@aws-sdk/types";
-import { isProduction } from "./constants";
+import { Credentials as AwsCredentials } from "@aws-sdk/types";
 
 interface Config {
   aws: {
     region: string;
-    credentials: Credentials;
+    credentials: AwsCredentials;
     s3: {
       endpoint?: string;
       forcePathStyle: boolean;
@@ -24,9 +23,9 @@ const config: Config = {
     },
     s3: {
       endpoint: process.env.AWS_S3_ENDPOINT,
-      forcePathStyle: isProduction ? false : true,
+      forcePathStyle: process.env.AWS_S3_FORCE_PATH_STYLE === "true",
       buckets: {
-        avatars: isProduction ? "TODO_production_avatars_bucket" : "avatars",
+        avatars: process.env.AWS_S3_BUCKET_AVATARS ?? "avatars",
       },
     },
   },

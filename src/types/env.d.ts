@@ -10,6 +10,8 @@ declare global {
       AWS_ACCESS_KEY_ID: string;
       AWS_SECRET_ACCESS_KEY: string;
       AWS_S3_ENDPOINT?: string;
+      AWS_S3_FORCE_PATH_STYLE?: "true";
+      AWS_S3_BUCKET_AVATARS?: string;
     }
   }
 }
