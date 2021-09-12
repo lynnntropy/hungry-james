@@ -12,7 +12,8 @@ const schema = makeSchema({
   },
   shouldGenerateArtifacts: !isProduction,
   outputs: {
-    schema: path.join(process.cwd(), "generated/schema.gen.graphql"),
+    schema: path.join(process.cwd(), "./generated/schema.gen.graphql"),
+    typegen: path.join(process.cwd(), "./generated/nexusTypes.gen.ts"),
   },
 });
 

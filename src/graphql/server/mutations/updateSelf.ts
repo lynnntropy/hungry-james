@@ -23,6 +23,8 @@ const updateSelf = mutationField("updateSelf", {
     const { session } = ctx;
     console.log(args);
     console.log(session);
+
+    return null;
   },
 });
 
