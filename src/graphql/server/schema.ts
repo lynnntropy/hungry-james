@@ -1,19 +1,20 @@
-import { makeSchema, mutationType, objectType, queryType } from "nexus";
+import { makeSchema } from "nexus";
+import * as path from "path";
+import { isProduction } from "../../constants";
+import mutations from "./mutations";
+import * as types from "./types";
 
-const User = objectType({
-  name: "User",
-  definition(t) {
-    t.id("id");
-    t.string("pronoun");
-    t.string("avatar");
-    t.string("avatarDead");
+const schema = makeSchema({
+  types: [types, ...mutations],
+  contextType: {
+    module: path.join(process.cwd(), "./src/graphql/server/index.ts"),
+    export: "Context",
+  },
+  shouldGenerateArtifacts: !isProduction,
+  outputs: {
+    schema: path.join(process.cwd(), "./generated/schema.gen.graphql"),
+    typegen: path.join(process.cwd(), "./generated/nexusTypes.gen.ts"),
   },
 });
-
-// const Query = queryType({ definition(t) {} });
-
-// const Mutation = mutationType({ definition(t) {} });
-
-const schema = makeSchema({ types: [User] });
 
 export default schema;

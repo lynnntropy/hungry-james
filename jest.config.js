@@ -1,4 +1,6 @@
 module.exports = {
+  setupFiles: ["./src/tests/setup.ts"],
+
   collectCoverageFrom: [
     "**/*.{js,jsx,ts,tsx}",
     "!**/*.d.ts",

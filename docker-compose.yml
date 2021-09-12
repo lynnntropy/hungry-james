@@ -10,9 +10,18 @@ services:
     volumes:
       - ./:/app
     environment:
+      DISCORD_CLIENT_ID: ~
+      DISCORD_CLIENT_SECRET: ~
+      LOG_LEVEL: ~
+      NEXTAUTH_URL: http://localhost:8080
+      NEXTAUTH_URL_INTERNAL: http://localhost:3000
       NODE_OPTIONS: "--unhandled-rejections=throw"
       DATABASE_URL: postgresql://postgres:postgres@db/hungry_james
-      LOG_LEVEL: ~
+      AWS_ACCESS_KEY_ID: test
+      AWS_SECRET_ACCESS_KEY: test
+      AWS_S3_ENDPOINT: http://localstack:4566
+      AWS_S3_ENDPOINT_PUBLIC: http://localhost:4566
+      AWS_S3_FORCE_PATH_STYLE: "true"
     depends_on:
       - db
 
@@ -36,3 +45,11 @@ services:
     environment:
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: hungry_james
+
+  localstack:
+    image: localstack/localstack
+    ports:
+      - 4566:4566
+      - 4571:4571
+    environment:
+      SERVICES: s3
