@@ -1,11 +1,12 @@
 import { Credentials as AwsCredentials } from "@aws-sdk/types";
 
-interface Config {
+export interface Config {
   aws: {
     region: string;
     credentials: AwsCredentials;
     s3: {
       endpoint?: string;
+      endpointPublic?: string;
       forcePathStyle: boolean;
       buckets: {
         [key: string]: string;
@@ -23,6 +24,7 @@ const config: Config = {
     },
     s3: {
       endpoint: process.env.AWS_S3_ENDPOINT,
+      endpointPublic: process.env.AWS_S3_ENDPOINT_PUBLIC,
       forcePathStyle: process.env.AWS_S3_FORCE_PATH_STYLE === "true",
       buckets: {
         avatars: process.env.AWS_S3_BUCKET_AVATARS ?? "avatars",
