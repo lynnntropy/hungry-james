@@ -1,55 +1,11 @@
-import {
-  arg,
-  inputObjectType,
-  makeSchema,
-  mutationField,
-  nonNull,
-  objectType,
-} from "nexus";
+import { makeSchema } from "nexus";
 import * as path from "path";
 import { isProduction } from "../../constants";
-
-const User = objectType({
-  name: "User",
-  definition(t) {
-    t.id("id");
-    t.nonNull.string("pronoun");
-    t.string("avatar");
-    t.string("avatarDead");
-  },
-});
-
-// const Query = queryType({ definition(t) {} });
-
-// const Mutation = mutationType({ definition(t) {} });
-
-const UpdateSelfInput = inputObjectType({
-  name: "UpdateSelfInput",
-  definition(t) {
-    t.string("pronoun");
-    t.string("avatar");
-    t.string("avatarDead");
-  },
-});
-
-const updateSelf = mutationField("updateSelf", {
-  type: User,
-  args: {
-    input: nonNull(
-      arg({
-        type: UpdateSelfInput,
-      })
-    ),
-  },
-  resolve(_, args, ctx) {
-    const { session } = ctx;
-    console.log(args);
-    console.log(session);
-  },
-});
+import mutations from "./mutations";
+import * as types from "./types";
 
 const schema = makeSchema({
-  types: [User, updateSelf],
+  types: [types, ...mutations],
   contextType: {
     module: path.join(process.cwd(), "./src/graphql/server/index.ts"),
     export: "Context",
