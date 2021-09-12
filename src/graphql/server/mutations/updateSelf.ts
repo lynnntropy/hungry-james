@@ -13,6 +13,7 @@ const UpdateSelfInput = inputObjectType({
 
 const updateSelf = mutationField("updateSelf", {
   type: User,
+
   args: {
     input: nonNull(
       arg({
@@ -20,6 +21,7 @@ const updateSelf = mutationField("updateSelf", {
       })
     ),
   },
+
   async resolve(_, { input }, { session: { user } }) {
     return updateUser(user.id, {
       pronoun: input.pronoun ?? undefined,
