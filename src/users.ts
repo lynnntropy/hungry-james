@@ -5,6 +5,7 @@ import prisma from "./prisma";
 import { defaultPronoun, serializePronoun } from "./pronouns";
 import s3 from "./s3";
 import { User } from "./types/app";
+import { Prisma, User as DbUser } from "@prisma/client";
 
 export const fetchOrCreateUserForDiscordProfile = async (
   profile: Profile,
@@ -22,13 +23,29 @@ export const fetchOrCreateUserForDiscordProfile = async (
 };
 
 export const findUserById = async (id: string): Promise<User | null> => {
-  const user = await prisma.user.findUnique({ where: { id: Number(id) } });
+  const dbUser = await prisma.user.findUnique({ where: { id: Number(id) } });
 
-  if (user) {
-    return { ...user, id: user.id.toString() } as User;
+  if (dbUser) {
+    return getAppUserFromDatabaseUser(dbUser);
   }
 
   return null;
+};
+
+export const updateUser = async (
+  id: string,
+  input: Prisma.UserUpdateArgs["data"]
+) => {
+  const dbUser = await prisma.user.update({
+    where: { id: Number(id) },
+    data: input,
+  });
+
+  return getAppUserFromDatabaseUser(dbUser);
+};
+
+const getAppUserFromDatabaseUser = (user: DbUser): User => {
+  return { ...user, id: user.id.toString() } as User;
 };
 
 const createUserForDiscordProfile = async (
@@ -60,7 +77,7 @@ const createUserForDiscordProfile = async (
     Body: avatarData,
   });
 
-  const user = await prisma.user.create({
+  const dbUser = await prisma.user.create({
     data: {
       externalIds: {
         discord: profile.id,
@@ -71,5 +88,5 @@ const createUserForDiscordProfile = async (
     },
   });
 
-  return { ...user, id: user.id.toString() } as User;
+  return getAppUserFromDatabaseUser(dbUser);
 };

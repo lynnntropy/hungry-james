@@ -3,7 +3,7 @@ import axios, { AxiosStatic } from "axios";
 import { Profile, TokenSet } from "next-auth";
 import prisma from "./prisma";
 import s3 from "./s3";
-import { fetchOrCreateUserForDiscordProfile } from "./users";
+import { fetchOrCreateUserForDiscordProfile, updateUser } from "./users";
 
 jest.mock("axios");
 jest.mock("./s3");
@@ -130,5 +130,84 @@ test("returns user from database for known Discord ID", async () => {
     avatar:
       "https://cdn.discordapp.com/avatars/test_known_discord_id/test_avatar.png",
     avatarDead: null,
+  });
+});
+
+test("updates user with all properties given", async () => {
+  const userDelegate = {
+    update: jest.fn().mockReturnValueOnce({
+      id: 1,
+      externalIds: {},
+      pronoun: "test/test/test/test/test",
+      avatar: "test_avatar",
+      avatarDead: "test_avatar_dead",
+    }),
+  };
+
+  Object.defineProperty(prisma, "user", {
+    value: userDelegate,
+  });
+
+  const user = await updateUser("1", {
+    pronoun: "test/test/test/test/test",
+    avatar: "test_avatar",
+    avatarDead: "test_avatar_dead",
+  });
+
+  expect(userDelegate.update).toHaveBeenCalledTimes(1);
+  expect(userDelegate.update).toHaveBeenCalledWith({
+    where: { id: 1 },
+    data: {
+      pronoun: "test/test/test/test/test",
+      avatar: "test_avatar",
+      avatarDead: "test_avatar_dead",
+    },
+  });
+
+  expect(user).toStrictEqual({
+    id: "1",
+    externalIds: {},
+    pronoun: "test/test/test/test/test",
+    avatar: "test_avatar",
+    avatarDead: "test_avatar_dead",
+  });
+});
+
+test("updates user with some properties given", async () => {
+  const userDelegate = {
+    update: jest.fn().mockReturnValueOnce({
+      id: 1,
+      externalIds: {},
+      pronoun: "test/test/test/test/test",
+      avatar: "test_avatar",
+      avatarDead: "test_avatar_dead",
+    }),
+  };
+
+  Object.defineProperty(prisma, "user", {
+    value: userDelegate,
+  });
+
+  const user = await updateUser("1", {
+    pronoun: undefined,
+    avatar: "test_avatar",
+    avatarDead: "test_avatar_dead",
+  });
+
+  expect(userDelegate.update).toHaveBeenCalledTimes(1);
+  expect(userDelegate.update).toHaveBeenCalledWith({
+    where: { id: 1 },
+    data: {
+      avatar: "test_avatar",
+      avatarDead: "test_avatar_dead",
+    },
+  });
+
+  expect(user).toStrictEqual({
+    id: "1",
+    externalIds: {},
+    pronoun: "test/test/test/test/test",
+    avatar: "test_avatar",
+    avatarDead: "test_avatar_dead",
   });
 });

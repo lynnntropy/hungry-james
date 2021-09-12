@@ -1,4 +1,5 @@
 import { arg, inputObjectType, mutationField, nonNull } from "nexus";
+import { updateUser } from "../../../users";
 import { User } from "../types";
 
 const UpdateSelfInput = inputObjectType({
@@ -19,12 +20,12 @@ const updateSelf = mutationField("updateSelf", {
       })
     ),
   },
-  resolve(_, args, ctx) {
-    const { session } = ctx;
-    console.log(args);
-    console.log(session);
-
-    return null;
+  async resolve(_, { input }, { session: { user } }) {
+    return updateUser(user.id, {
+      pronoun: input.pronoun ?? undefined,
+      avatar: input.avatar ?? undefined,
+      avatarDead: input.avatarDead,
+    });
   },
 });
 
